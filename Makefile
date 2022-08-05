@@ -1,11 +1,10 @@
 .DEFAULT_GOAL := run
 
-00-create-tables:
+00-create-tables-pre-load-file-2020-Jan:
 	@echo "Creating tables 'event_raw' and 'event_clean"
 	@sqlite3 db/assignment.db  ".read sql/00-create-tables.sql"	
 
-
-01-ingest-file-2020-Jan: 00-create-tables
+01-ingest-file-2020-Jan: 00-create-tables-pre-load-file-2020-Jan
 	@echo "Ingesting Jan-2020 file into the 'event_raw' table"
 	@sqlite3 db/assignment.db  ".read sql/01-ingest-file-2020-Jan.sql"
 
@@ -30,7 +29,11 @@
 	@sqlite3 db/assignment.db  ".read sql/06-daily-ticket-size.sql"
 
 
-01-ingest-file-2020-Feb: 06-daily-ticket-size-2020-Jan
+00-create-tables-pre-load-file-2020-Feb: 06-daily-ticket-size-2020-Jan
+	@echo "Creating tables 'event_raw' and 'event_clean"
+	@sqlite3 db/assignment.db  ".read sql/00-create-tables.sql"	
+
+01-ingest-file-2020-Feb: 00-create-tables-pre-load-file-2020-Feb
 	@echo "Ingesting Feb-2020 file into the 'event_raw' table"
 	@sqlite3 db/assignment.db  ".read sql/01-ingest-file-2020-Feb.sql"
 
