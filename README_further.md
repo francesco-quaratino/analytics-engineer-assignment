@@ -19,7 +19,20 @@ The incremantal loading is implemented with the following assumptions on the sou
 
 Within each of the .sql script, the incremental loading is achieved by:
 
-1) fetching, in the `import CTEs` code-block, the latest timestamp for which data is available in the target table (i.e. the one the script is aiming to load (in the example below `event_clean`). 
+1) re-creating the table `event_raw` - within the [00-create-tables.sql](https://github.com/francesco-quaratino/analytics-engineer-assignment/blob/main/sql/00-create-tables.sql) - before ingesting any file 
+```
+drop table if exists event_raw;
+
+create table event_raw (
+[...]
+```
+while creating all the other tables only once, that is if they don't exist yet
+```
+create table if not exists [...]
+```
+
+
+2) fetching, in the `import CTEs` code-block, the latest timestamp for which data is available in the target table (i.e. the one the script is aiming to load (in the example below `event_clean`). 
 ```
 target_table as (
     select 
@@ -28,7 +41,7 @@ target_table as (
 ),
 ```
 
-2) filtering out, in the `final CTE`, the rows with timestamp older than the latest timestamp, in order to prevent loading the same data twice.
+3) filtering out, in the `final CTE`, the rows with timestamp older than the latest timestamp, in order to prevent loading the same data twice.
 ```
 final as (
     select * from clean_data_types
@@ -37,6 +50,7 @@ final as (
     )    
 )
 ```
+
 
 ### SQL code style
 
